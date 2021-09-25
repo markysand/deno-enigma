@@ -15,8 +15,32 @@ import {
 
 function getMapping() {
   return [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
   ];
 }
 
@@ -31,8 +55,8 @@ Deno.test("enigma/wikipedia_rotors", () => {
     [Rotor.label.I, Rotor.label.II, Rotor.label.III],
     Reflector.label.B,
     "",
-    "AAA" /* 24, 13, 22 */,
-    "AAA"
+    "AAA", /* 24, 13, 22 */
+    "AAA",
   );
 
   const plaintext = "aaaaa";
@@ -49,18 +73,19 @@ Deno.test("enigma/manual_anno_1930", () => {
     [Rotor.label.II, Rotor.label.I, Rotor.label.III],
     Reflector.label.A,
     "AM FI NV PS TU WZ",
-    "XMV" /* 24, 13, 22 */,
-    "ABL"
+    "XMV", /* 24, 13, 22 */
+    "ABL",
   );
 
   const ciphertext =
     "GCDSE AHUGW TQGRK VLFGX UCALX VYMIG MMNMF DXTGN VHVRM MEVOU YFZSL RHDRR XFJWC FHUHM UNZEF RDISI KBGPM YVXUZ";
 
   const plaintext =
-    "FEIND LIQEI NFANT ERIEK OLONN EBEOB AQTET XANFA NGSUE DAUSG ANGBA ERWAL DEXEN DEDRE IKMOS TWAER TSNEU STADT".replaceAll(
-      " ",
-      ""
-    );
+    "FEIND LIQEI NFANT ERIEK OLONN EBEOB AQTET XANFA NGSUE DAUSG ANGBA ERWAL DEXEN DEDRE IKMOS TWAER TSNEU STADT"
+      .replaceAll(
+        " ",
+        "",
+      );
 
   const actualPlaintext = E.encodeString(ciphertext);
 
@@ -79,7 +104,7 @@ Deno.test("reflector/errors/length", () => {
       new Reflector("ABCD");
     },
     Error,
-    "length"
+    "length",
   );
 });
 
@@ -89,7 +114,7 @@ Deno.test("reflector/errors/reflective", () => {
       new Reflector("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     },
     Error,
-    "reflective"
+    "reflective",
   );
 });
 
@@ -114,15 +139,15 @@ Deno.test("rotor/null_setting", () => {
 
   assertEquals(
     r.encode(Base.charToNumber("U"), Direction.FORWARD),
-    Base.charToNumber("U")
+    Base.charToNumber("U"),
   );
   assertEquals(
     r.encode(Base.charToNumber("A"), Direction.FORWARD),
-    Base.charToNumber("A")
+    Base.charToNumber("A"),
   );
   assertEquals(
     r.encode(Base.charToNumber("X"), Direction.FORWARD),
-    Base.charToNumber("X")
+    Base.charToNumber("X"),
   );
 });
 
@@ -131,28 +156,28 @@ Deno.test("rotor/encode", () => {
 
   assertEquals(
     r.encode(Base.charToNumber("A"), Direction.FORWARD),
-    Base.charToNumber("B")
+    Base.charToNumber("B"),
   );
   assertEquals(
     r.encode(Base.charToNumber("B"), Direction.FORWARD),
-    Base.charToNumber("C")
+    Base.charToNumber("C"),
   );
   assertEquals(
     r.encode(Base.charToNumber("C"), Direction.FORWARD),
-    Base.charToNumber("A")
+    Base.charToNumber("A"),
   );
 
   assertEquals(
     r.encode(Base.charToNumber("B"), Direction.REVERSE),
-    Base.charToNumber("A")
+    Base.charToNumber("A"),
   );
   assertEquals(
     r.encode(Base.charToNumber("C"), Direction.REVERSE),
-    Base.charToNumber("B")
+    Base.charToNumber("B"),
   );
   assertEquals(
     r.encode(Base.charToNumber("A"), Direction.REVERSE),
-    Base.charToNumber("C")
+    Base.charToNumber("C"),
   );
 });
 
@@ -160,16 +185,16 @@ Deno.test("rotor_state/basic", () => {
   const rs = new RotorState(
     new Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", ""),
     0,
-    Base.charToNumber("B")
+    Base.charToNumber("B"),
   );
 
   assertEquals(
     rs.encode(Base.charToNumber("A"), Direction.FORWARD),
-    Base.charToNumber("J")
+    Base.charToNumber("J"),
   );
   assertEquals(
     rs.encode(Base.charToNumber("J"), Direction.REVERSE),
-    Base.charToNumber("A")
+    Base.charToNumber("A"),
   );
 });
 
@@ -185,37 +210,37 @@ Deno.test("rotor_group/advance", () => {
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [0, 0, 1]
+    [0, 0, 1],
   );
 
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [0, 1, 2]
+    [0, 1, 2],
   );
 
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [1, 2, 3]
+    [1, 2, 3],
   );
 
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [1, 2, 4]
+    [1, 2, 4],
   );
 
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [1, 2, 5]
+    [1, 2, 5],
   );
 
   rg.advance();
   assertEquals(
     rg.rotorStates.map((rs) => rs.position),
-    [1, 2, 6]
+    [1, 2, 6],
   );
 });
 
@@ -228,7 +253,7 @@ Deno.test("base/validate/length", () => {
       Base.validate(m, 0);
     },
     Error,
-    "length"
+    "length",
   );
 });
 
@@ -241,7 +266,7 @@ Deno.test("base/validate/value", () => {
       Base.validate(m, 0);
     },
     Error,
-    "out of range"
+    "out of range",
   );
 });
 
@@ -255,7 +280,7 @@ Deno.test("base/validate/type", () => {
       Base.validate(m, 0);
     },
     Error,
-    "finite number"
+    "finite number",
   );
 });
 
@@ -270,7 +295,7 @@ Deno.test("base/validate/symmetry", () => {
       Base.validate(m, 1);
     },
     Error,
-    "must be symmetric"
+    "must be symmetric",
   );
 });
 
@@ -282,7 +307,7 @@ Deno.test("base/validate/reflective", () => {
       Base.validate(m, 2);
     },
     Error,
-    "reflective"
+    "reflective",
   );
 });
 

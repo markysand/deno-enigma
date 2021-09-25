@@ -12,7 +12,7 @@ function main(args: string[]) {
     Reflector.label.B,
     "CT BX ZW PI VM NO",
     "AAA",
-    "CUX"
+    "CUX",
   );
 
   console.log(E.encodeString(args.join("")));

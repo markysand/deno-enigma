@@ -69,7 +69,7 @@ export abstract class Base implements IEncode {
     m.forEach((val, index) => {
       if (m[val] !== index) {
         throw new Error(
-          `mapping must be symmetric, failed at pair ${val}:${index}`
+          `mapping must be symmetric, failed at pair ${val}:${index}`,
         );
       }
     });
@@ -266,7 +266,7 @@ export class RotorState implements IAdvance, IAtNotch, IEncode {
   constructor(
     public rotor: Rotor,
     public ringSetting: number,
-    public position: number
+    public position: number,
   ) {}
 
   encode(n: number, direction: Direction): number {
@@ -315,13 +315,13 @@ export class RotorGroup implements IAdvance, IEncode {
     if (d === Direction.REVERSE) {
       return this.rotorStates.reduce(
         (acc, val) => val.encode(acc, Direction.REVERSE),
-        n
+        n,
       );
     }
 
     return this.rotorStates.reduceRight(
       (acc, val) => val.encode(acc, Direction.FORWARD),
-      n
+      n,
     );
   }
 
@@ -334,7 +334,7 @@ export class Enigma implements IEncode {
   constructor(
     public plugboard: PlugBoard,
     public rotorGroup: RotorGroup,
-    public reflector: Reflector
+    public reflector: Reflector,
   ) {}
 
   static create(
@@ -342,7 +342,7 @@ export class Enigma implements IEncode {
     reflectorLabel: ReflectorLabel,
     plugboardConfig: string,
     ringSettings: string,
-    positions: string
+    positions: string,
   ) {
     [rotorLabel, ringSettings, positions]
       .map((item) => item.length)
@@ -365,11 +365,11 @@ export class Enigma implements IEncode {
             new RotorState(
               Rotor.create(name),
               ringSettingValues[index],
-              positionValues[index]
-            )
-        )
+              positionValues[index],
+            ),
+        ),
       ),
-      Reflector.create(reflectorLabel)
+      Reflector.create(reflectorLabel),
     );
   }
 
@@ -391,7 +391,7 @@ export class Enigma implements IEncode {
 
   encodeString(s: string): string {
     return Base.numbersToString(
-      Base.stringToNumbers(s).map((n) => this.encode(n))
+      Base.stringToNumbers(s).map((n) => this.encode(n)),
     );
   }
 }
