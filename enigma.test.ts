@@ -138,15 +138,15 @@ Deno.test("rotor/null_setting", () => {
   const r = new Rotor("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "");
 
   assertEquals(
-    r.encode(Base.charToNumber("U"), Direction.FORWARD),
+    r.encode(Base.charToNumber("U"), Direction.Forward),
     Base.charToNumber("U"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("A"), Direction.FORWARD),
+    r.encode(Base.charToNumber("A"), Direction.Forward),
     Base.charToNumber("A"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("X"), Direction.FORWARD),
+    r.encode(Base.charToNumber("X"), Direction.Forward),
     Base.charToNumber("X"),
   );
 });
@@ -155,28 +155,28 @@ Deno.test("rotor/encode", () => {
   const r = new Rotor("BCADEFGHIJKLMNOPQRSTUVWXYZ", "");
 
   assertEquals(
-    r.encode(Base.charToNumber("A"), Direction.FORWARD),
+    r.encode(Base.charToNumber("A"), Direction.Forward),
     Base.charToNumber("B"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("B"), Direction.FORWARD),
+    r.encode(Base.charToNumber("B"), Direction.Forward),
     Base.charToNumber("C"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("C"), Direction.FORWARD),
+    r.encode(Base.charToNumber("C"), Direction.Forward),
     Base.charToNumber("A"),
   );
 
   assertEquals(
-    r.encode(Base.charToNumber("B"), Direction.REVERSE),
+    r.encode(Base.charToNumber("B"), Direction.Reverse),
     Base.charToNumber("A"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("C"), Direction.REVERSE),
+    r.encode(Base.charToNumber("C"), Direction.Reverse),
     Base.charToNumber("B"),
   );
   assertEquals(
-    r.encode(Base.charToNumber("A"), Direction.REVERSE),
+    r.encode(Base.charToNumber("A"), Direction.Reverse),
     Base.charToNumber("C"),
   );
 });
@@ -189,11 +189,11 @@ Deno.test("rotor_state/basic", () => {
   );
 
   assertEquals(
-    rs.encode(Base.charToNumber("A"), Direction.FORWARD),
+    rs.encode(Base.charToNumber("A"), Direction.Forward),
     Base.charToNumber("J"),
   );
   assertEquals(
-    rs.encode(Base.charToNumber("J"), Direction.REVERSE),
+    rs.encode(Base.charToNumber("J"), Direction.Reverse),
     Base.charToNumber("A"),
   );
 });

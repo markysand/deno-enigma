@@ -1,29 +1,29 @@
-export interface IAdvance {
+export interface Advance {
   advance: () => void;
 }
 
-export interface IAtNotch {
+export interface AtNotch {
   atNotch: () => boolean;
 }
 
-export interface IEncode {
+export interface Encode {
   encode(char: number, direction: Direction): number;
 }
 
 export enum Direction {
-  FORWARD,
-  REVERSE,
+  Forward,
+  Reverse,
 }
 
-export type Mapping = Array<number>;
+export type Mapping = number[];
 
 enum ValidationLevel {
-  BASIC, // must have correct length, values, unique encoded values
-  SYMMETRIC, // encoding and decoding yields the same value
-  REFLECTIVE, // no value must encode to same value as itself
+  Basic, // must have correct length, values, unique encoded values
+  Symmetric, // encoding and decoding yields the same value
+  Reflective, // no value must encode to same value as itself
 }
 
-export abstract class Base implements IEncode {
+export abstract class Base implements Encode {
   mapping: Mapping = [];
 
   static validate(m: Mapping, vl: ValidationLevel) {
@@ -31,11 +31,11 @@ export abstract class Base implements IEncode {
     this.assertValue(m);
     this.assertUnique(m);
 
-    if (vl >= ValidationLevel.SYMMETRIC) {
+    if (vl >= ValidationLevel.Symmetric) {
       this.assertSymmetric(m);
     }
 
-    if (vl == ValidationLevel.REFLECTIVE) {
+    if (vl == ValidationLevel.Reflective) {
       this.assertReflective(m);
     }
   }
@@ -123,7 +123,7 @@ export class Reflector extends Base {
 
     const mapping = Base.stringToNumbers(config);
 
-    Base.validate(mapping, ValidationLevel.REFLECTIVE);
+    Base.validate(mapping, ValidationLevel.Reflective);
 
     this.mapping = mapping;
   }
@@ -172,7 +172,7 @@ export class PlugBoard extends Base {
       });
     }
 
-    Base.validate(mapping, ValidationLevel.SYMMETRIC);
+    Base.validate(mapping, ValidationLevel.Symmetric);
 
     this.mapping = mapping;
   }
@@ -210,14 +210,14 @@ export class Rotor extends Base {
       reverseMapping.push(0);
     }
 
-    Base.validate(mapping, ValidationLevel.BASIC);
+    Base.validate(mapping, ValidationLevel.Basic);
     this.mapping = mapping;
 
     mapping.forEach((value, index) => {
       reverseMapping[value] = index;
     });
 
-    Base.validate(reverseMapping, ValidationLevel.BASIC);
+    Base.validate(reverseMapping, ValidationLevel.Basic);
     this.reverseMapping = reverseMapping;
   }
 
@@ -255,14 +255,14 @@ export class Rotor extends Base {
   }
 
   encode(n: number, direction: Direction): number {
-    if (direction === Direction.REVERSE) {
+    if (direction === Direction.Reverse) {
       return this.reverseMapping[n];
     }
     return this.mapping[n];
   }
 }
 
-export class RotorState implements IAdvance, IAtNotch, IEncode {
+export class RotorState implements Advance, AtNotch, Encode {
   constructor(
     public rotor: Rotor,
     public ringSetting: number,
@@ -286,10 +286,10 @@ export class RotorState implements IAdvance, IAtNotch, IEncode {
   }
 }
 
-export class RotorGroup implements IAdvance, IEncode {
+export class RotorGroup implements Advance, Encode {
   constructor(public rotorStates: Array<RotorState>) {}
 
-  static advanceRotorStates(rs: Array<IAdvance & IAtNotch>) {
+  static advanceRotorStates(rs: Array<Advance & AtNotch>) {
     const shouldAdvance: boolean[] = [];
 
     for (let index = 0; index < rs.length; index++) {
@@ -312,15 +312,15 @@ export class RotorGroup implements IAdvance, IEncode {
   }
 
   encode(n: number, d: Direction): number {
-    if (d === Direction.REVERSE) {
+    if (d === Direction.Reverse) {
       return this.rotorStates.reduce(
-        (acc, val) => val.encode(acc, Direction.REVERSE),
+        (acc, val) => val.encode(acc, Direction.Reverse),
         n,
       );
     }
 
     return this.rotorStates.reduceRight(
-      (acc, val) => val.encode(acc, Direction.FORWARD),
+      (acc, val) => val.encode(acc, Direction.Forward),
       n,
     );
   }
@@ -330,7 +330,7 @@ export class RotorGroup implements IAdvance, IEncode {
   }
 }
 
-export class Enigma implements IEncode {
+export class Enigma implements Encode {
   constructor(
     public plugboard: PlugBoard,
     public rotorGroup: RotorGroup,
@@ -378,11 +378,11 @@ export class Enigma implements IEncode {
 
     const n1 = this.plugboard.encode(n);
 
-    const n2 = this.rotorGroup.encode(n1, Direction.FORWARD);
+    const n2 = this.rotorGroup.encode(n1, Direction.Forward);
 
     const n3 = this.reflector.encode(n2);
 
-    const n4 = this.rotorGroup.encode(n3, Direction.REVERSE);
+    const n4 = this.rotorGroup.encode(n3, Direction.Reverse);
 
     const n5 = this.plugboard.encode(n4);
 
