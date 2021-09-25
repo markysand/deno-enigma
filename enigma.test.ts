@@ -13,6 +13,13 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.108.0/testing/asserts.ts";
 
+function getMapping() {
+  return [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25,
+  ];
+}
+
 Deno.test("enigma/wikipedia_rotors", () => {
   // https://en.wikipedia.org/wiki/Enigma_rotor_details
   //
@@ -212,43 +219,77 @@ Deno.test("rotor_group/advance", () => {
   );
 });
 
-Deno.test("base_block/validate", () => {
+Deno.test("base/validate/length", () => {
+  const m = getMapping();
+  m.pop();
+
   assertThrows(
     () => {
-      Base.validate(
-        [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          "boom",
-          14,
-          15,
-          16,
-          17,
-          18,
-          19,
-          20,
-          21,
-          22,
-          23,
-          24,
-          25,
-          26,
-          // deno-lint-ignore no-explicit-any
-        ] as any,
-        0
-      );
+      Base.validate(m, 0);
+    },
+    Error,
+    "length"
+  );
+});
+
+Deno.test("base/validate/value", () => {
+  const m = getMapping();
+  m[5] = 40; // > 25
+
+  assertThrows(
+    () => {
+      Base.validate(m, 0);
+    },
+    Error,
+    "out of range"
+  );
+});
+
+Deno.test("base/validate/type", () => {
+  const m: any = getMapping();
+  m[5] = "boom!";
+
+  assertThrows(
+    () => {
+      Base.validate(m, 0);
     },
     Error,
     "finite number"
   );
+});
+
+Deno.test("base/validate/symmetry", () => {
+  const m = getMapping();
+  m[0] = 1;
+  m[1] = 2;
+  m[2] = 0;
+
+  assertThrows(
+    () => {
+      Base.validate(m, 1);
+    },
+    Error,
+    "must be symmetric"
+  );
+});
+
+Deno.test("base/validate/reflective", () => {
+  const m = getMapping();
+
+  assertThrows(
+    () => {
+      Base.validate(m, 2);
+    },
+    Error,
+    "reflective"
+  );
+});
+
+Deno.test("base/validate/reflective-ok", () => {
+  // this mapping has unique, correctly typed values in the right range
+  // it encodes the same from both directions
+  // also, no value maps to itself
+  const m = getMapping().reverse();
+
+  Base.validate(m, 2); // should not throw
 });
