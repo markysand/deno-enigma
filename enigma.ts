@@ -70,17 +70,24 @@ export abstract class Base implements IEncode {
   static mod(n: number): number {
     return ((n % 26) + 26) % 26;
   }
-}
-// number, number[], string
 
-const ALPHA = "A".charCodeAt(0);
+  static ALPHA = "A".charCodeAt(0);
 
-export function charToNumber(s: string) {
-  return s.toUpperCase().charCodeAt(0) - ALPHA;
-}
+  static charToNumber(s: string) {
+    return s.toUpperCase().charCodeAt(0) - Base.ALPHA;
+  }
 
-export function stringToChars(s: string) {
-  return s.toUpperCase().replace(/\s/, "").split("").map(charToNumber);
+  static stringToNumbers(s: string) {
+    return s
+      .toUpperCase()
+      .replaceAll(/\s/g, "")
+      .split("")
+      .map(Base.charToNumber);
+  }
+
+  static numbersToString(nn: number[]): string {
+    return nn.map((n) => String.fromCharCode(n + Base.ALPHA)).join("");
+  }
 }
 
 enum ReflectorLabel {
@@ -92,7 +99,7 @@ export class Reflector extends Base {
   constructor(config: string) {
     super();
 
-    const mapping = config.toUpperCase().split("").map(charToNumber);
+    const mapping = Base.stringToNumbers(config);
 
     Base.assertLength(mapping);
     Base.assertUnique(mapping);
@@ -138,8 +145,8 @@ export class PlugBoard extends Base {
       step1.forEach((pair) => {
         const [x, y] = pair;
 
-        const xN = charToNumber(x);
-        const yN = charToNumber(y);
+        const xN = Base.charToNumber(x);
+        const yN = Base.charToNumber(y);
 
         mapping[xN] = yN;
         mapping[yN] = xN;
@@ -176,13 +183,9 @@ export class Rotor extends Base {
   constructor(config: string, notchesAt: string) {
     super();
 
-    this.notchesAt = stringToChars(notchesAt);
+    this.notchesAt = Base.stringToNumbers(notchesAt);
 
-    const mapping = config
-      .toUpperCase()
-      .replace(/\s/, "")
-      .split("")
-      .map(charToNumber);
+    const mapping = Base.stringToNumbers(config);
 
     const reverseMapping: Mapping = [];
 
@@ -339,9 +342,8 @@ export class Enigma implements IEncode {
         return curr;
       });
 
-    // prepare strings to numbers
-    const ringSettingValues = stringToChars(ringSettings);
-    const positionValues = stringToChars(positions);
+    const ringSettingValues = Base.stringToNumbers(ringSettings);
+    const positionValues = Base.stringToNumbers(positions);
 
     return new Enigma(
       new PlugBoard(plugboardConfig),
@@ -376,13 +378,8 @@ export class Enigma implements IEncode {
   }
 
   encodeString(s: string): string {
-    return s
-      .toUpperCase()
-      .replaceAll(/\s/g, "")
-      .split("")
-      .map(charToNumber)
-      .map((c) => this.encode(c))
-      .map((c) => String.fromCharCode(c + ALPHA))
-      .join("");
+    return Base.numbersToString(
+      Base.stringToNumbers(s).map((n) => this.encode(n))
+    );
   }
 }

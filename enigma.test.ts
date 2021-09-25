@@ -1,6 +1,5 @@
 import {
   Base,
-  charToNumber,
   Enigma,
   PlugBoard,
   Reflector,
@@ -64,7 +63,7 @@ Deno.test("enigma/manual_anno_1930", () => {
 Deno.test("reflector/standard", () => {
   const r = new Reflector("ZYXWVUTSRQPONMLKJIHGFEDCBA");
 
-  assertEquals(r.encode(charToNumber("B")), charToNumber("Y"));
+  assertEquals(r.encode(Base.charToNumber("B")), Base.charToNumber("Y"));
 });
 
 Deno.test("reflector/errors/length", () => {
@@ -90,9 +89,9 @@ Deno.test("reflector/errors/reflective", () => {
 Deno.test("plugboard/standard", () => {
   const p = new PlugBoard("DF AC");
 
-  assertEquals(p.encode(charToNumber("U")), charToNumber("U"));
-  assertEquals(p.encode(charToNumber("D")), charToNumber("F"));
-  assertEquals(p.encode(charToNumber("C")), charToNumber("A"));
+  assertEquals(p.encode(Base.charToNumber("U")), Base.charToNumber("U"));
+  assertEquals(p.encode(Base.charToNumber("D")), Base.charToNumber("F"));
+  assertEquals(p.encode(Base.charToNumber("C")), Base.charToNumber("A"));
 });
 
 Deno.test("plugboard/zero_config", () => {
@@ -107,16 +106,16 @@ Deno.test("rotor/null_setting", () => {
   const r = new Rotor("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "");
 
   assertEquals(
-    r.encode(charToNumber("U"), Direction.FORWARD),
-    charToNumber("U")
+    r.encode(Base.charToNumber("U"), Direction.FORWARD),
+    Base.charToNumber("U")
   );
   assertEquals(
-    r.encode(charToNumber("A"), Direction.FORWARD),
-    charToNumber("A")
+    r.encode(Base.charToNumber("A"), Direction.FORWARD),
+    Base.charToNumber("A")
   );
   assertEquals(
-    r.encode(charToNumber("X"), Direction.FORWARD),
-    charToNumber("X")
+    r.encode(Base.charToNumber("X"), Direction.FORWARD),
+    Base.charToNumber("X")
   );
 });
 
@@ -124,29 +123,29 @@ Deno.test("rotor/encode", () => {
   const r = new Rotor("BCADEFGHIJKLMNOPQRSTUVWXYZ", "");
 
   assertEquals(
-    r.encode(charToNumber("A"), Direction.FORWARD),
-    charToNumber("B")
+    r.encode(Base.charToNumber("A"), Direction.FORWARD),
+    Base.charToNumber("B")
   );
   assertEquals(
-    r.encode(charToNumber("B"), Direction.FORWARD),
-    charToNumber("C")
+    r.encode(Base.charToNumber("B"), Direction.FORWARD),
+    Base.charToNumber("C")
   );
   assertEquals(
-    r.encode(charToNumber("C"), Direction.FORWARD),
-    charToNumber("A")
+    r.encode(Base.charToNumber("C"), Direction.FORWARD),
+    Base.charToNumber("A")
   );
 
   assertEquals(
-    r.encode(charToNumber("B"), Direction.REVERSE),
-    charToNumber("A")
+    r.encode(Base.charToNumber("B"), Direction.REVERSE),
+    Base.charToNumber("A")
   );
   assertEquals(
-    r.encode(charToNumber("C"), Direction.REVERSE),
-    charToNumber("B")
+    r.encode(Base.charToNumber("C"), Direction.REVERSE),
+    Base.charToNumber("B")
   );
   assertEquals(
-    r.encode(charToNumber("A"), Direction.REVERSE),
-    charToNumber("C")
+    r.encode(Base.charToNumber("A"), Direction.REVERSE),
+    Base.charToNumber("C")
   );
 });
 
@@ -154,16 +153,16 @@ Deno.test("rotor_state/basic", () => {
   const rs = new RotorState(
     new Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", ""),
     0,
-    charToNumber("B")
+    Base.charToNumber("B")
   );
 
   assertEquals(
-    rs.encode(charToNumber("A"), Direction.FORWARD),
-    charToNumber("J")
+    rs.encode(Base.charToNumber("A"), Direction.FORWARD),
+    Base.charToNumber("J")
   );
   assertEquals(
-    rs.encode(charToNumber("J"), Direction.REVERSE),
-    charToNumber("A")
+    rs.encode(Base.charToNumber("J"), Direction.REVERSE),
+    Base.charToNumber("A")
   );
 });
 
