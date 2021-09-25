@@ -18,13 +18,15 @@ export enum Direction {
 export type Mapping = number[];
 
 enum ValidationLevel {
-  Basic, // must have correct length, values, unique encoded values
-  Symmetric, // encoding and decoding yields the same value
-  Reflective, // no value must encode to same value as itself
+  Basic,
+  Symmetric,
+  Reflective,
 }
 
 export abstract class Base implements Encode {
   mapping: Mapping = [];
+
+  abstract encode(n: number, direction?: Direction): number;
 
   static validate(m: Mapping, vl: ValidationLevel) {
     this.assertLength(m);
@@ -58,22 +60,6 @@ export abstract class Base implements Encode {
     });
   }
 
-  private static assertReflective(m: Mapping) {
-    m.forEach((val, index) => {
-      if (val === index) {
-        throw new Error(`reflective error at ${index} of ${m}`);
-      }
-    });
-  }
-  private static assertSymmetric(m: Mapping) {
-    m.forEach((val, index) => {
-      if (m[val] !== index) {
-        throw new Error(
-          `mapping must be symmetric, failed at pair ${val}:${index}`,
-        );
-      }
-    });
-  }
   private static assertUnique(m: Mapping) {
     const mapped: Record<string, boolean> = {};
 
@@ -86,7 +72,23 @@ export abstract class Base implements Encode {
     }
   }
 
-  abstract encode(n: number, direction?: Direction): number;
+  private static assertReflective(m: Mapping) {
+    m.forEach((val, index) => {
+      if (val === index) {
+        throw new Error(`reflective error at ${index} of ${m}`);
+      }
+    });
+  }
+
+  private static assertSymmetric(m: Mapping) {
+    m.forEach((val, index) => {
+      if (m[val] !== index) {
+        throw new Error(
+          `mapping must be symmetric, failed at pair ${val}:${index}`,
+        );
+      }
+    });
+  }
 
   static mod(n: number): number {
     return ((n % 26) + 26) % 26;
