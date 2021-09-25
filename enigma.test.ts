@@ -212,38 +212,41 @@ Deno.test("rotor_group/advance", () => {
   );
 });
 
-Deno.test("base_block/static_assert_length", () => {
+Deno.test("base_block/validate", () => {
   assertThrows(
     () => {
-      Base.assertLength([
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        "boom",
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21,
-        22,
-        23,
-        24,
-        25,
-        26,
-        // deno-lint-ignore no-explicit-any
-      ] as any);
+      Base.validate(
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          "boom",
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          // deno-lint-ignore no-explicit-any
+        ] as any,
+        0
+      );
     },
     Error,
     "finite number"

@@ -16,16 +16,37 @@ export enum Direction {
 }
 
 export type Mapping = Array<number>;
-ReferenceError;
+
+enum ValidationLevel {
+  BASIC, // must have correct length, values, unique encoded values
+  SYMMETRIC, // encoding and decoding yields the same value
+  REFLECTIVE, // no value must encode to same value as itself
+}
 
 export abstract class Base implements IEncode {
   mapping: Mapping = [];
 
-  static assertLength(m: Mapping) {
+  static validate(m: Mapping, vl: ValidationLevel) {
+    this.assertLength(m);
+    this.assertValue(m);
+    this.assertUnique(m);
+
+    if (vl >= ValidationLevel.SYMMETRIC) {
+      this.assertSymmetric(m);
+    }
+
+    if (vl == ValidationLevel.REFLECTIVE) {
+      this.assertReflective(m);
+    }
+  }
+
+  private static assertLength(m: Mapping) {
     if (m.length != 26) {
       throw new Error(`mapping length ${m.length} - must be 26}`);
     }
+  }
 
+  private static assertValue(m: Mapping) {
     m.forEach((n) => {
       if (!Number.isFinite(n)) {
         throw new Error("n must be finite number");
@@ -37,14 +58,14 @@ export abstract class Base implements IEncode {
     });
   }
 
-  static assertReflective(m: Mapping) {
+  private static assertReflective(m: Mapping) {
     m.forEach((val, index) => {
       if (val === index) {
         throw new Error(`reflective error at ${index} of ${m}`);
       }
     });
   }
-  static assertSymmetric(m: Mapping) {
+  private static assertSymmetric(m: Mapping) {
     m.forEach((val, index) => {
       if (m[val] !== index) {
         throw new Error(
@@ -53,7 +74,7 @@ export abstract class Base implements IEncode {
       }
     });
   }
-  static assertUnique(m: Mapping) {
+  private static assertUnique(m: Mapping) {
     const mapped: Record<string, boolean> = {};
 
     m.forEach((value) => {
@@ -95,16 +116,14 @@ enum ReflectorLabel {
   B,
   C,
 }
+
 export class Reflector extends Base {
   constructor(config: string) {
     super();
 
     const mapping = Base.stringToNumbers(config);
 
-    Base.assertLength(mapping);
-    Base.assertUnique(mapping);
-    Base.assertSymmetric(mapping);
-    Base.assertReflective(mapping);
+    Base.validate(mapping, ValidationLevel.REFLECTIVE);
 
     this.mapping = mapping;
   }
@@ -153,9 +172,7 @@ export class PlugBoard extends Base {
       });
     }
 
-    Base.assertLength(mapping);
-    Base.assertUnique(mapping);
-    Base.assertSymmetric(mapping);
+    Base.validate(mapping, ValidationLevel.SYMMETRIC);
 
     this.mapping = mapping;
   }
@@ -193,19 +210,15 @@ export class Rotor extends Base {
       reverseMapping.push(0);
     }
 
-    Base.assertLength(mapping);
-    Base.assertUnique(mapping);
+    Base.validate(mapping, ValidationLevel.BASIC);
+    this.mapping = mapping;
 
     mapping.forEach((value, index) => {
       reverseMapping[value] = index;
     });
 
+    Base.validate(reverseMapping, ValidationLevel.BASIC);
     this.reverseMapping = reverseMapping;
-
-    Base.assertLength(mapping);
-    Base.assertUnique(reverseMapping);
-
-    this.mapping = mapping;
   }
 
   static label = RotorLabel;
@@ -306,10 +319,10 @@ export class RotorGroup implements IAdvance, IEncode {
       );
     }
 
-    return this.rotorStates
-      .slice() // do not mutate!
-      .reverse() // right to left
-      .reduce((acc, val) => val.encode(acc, Direction.FORWARD), n);
+    return this.rotorStates.reduceRight(
+      (acc, val) => val.encode(acc, Direction.FORWARD),
+      n
+    );
   }
 
   advance() {
@@ -331,7 +344,6 @@ export class Enigma implements IEncode {
     ringSettings: string,
     positions: string
   ) {
-    // assert same length
     [rotorLabel, ringSettings, positions]
       .map((item) => item.length)
       .reduce((prev, curr) => {
