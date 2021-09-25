@@ -291,5 +291,5 @@ Deno.test("base/validate/reflective-ok", () => {
   // also, no value maps to itself
   const m = getMapping().reverse();
 
-  Base.validate(m, 2); // should not throw
+  Base.validate(m, 2); // should not throw even with the strictest setting
 });
