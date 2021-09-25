@@ -246,6 +246,7 @@ Deno.test("base/validate/value", () => {
 });
 
 Deno.test("base/validate/type", () => {
+  // deno-lint-ignore no-explicit-any
   const m: any = getMapping();
   m[5] = "boom!";
 
