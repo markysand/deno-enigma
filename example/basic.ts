@@ -1,4 +1,4 @@
-import { Enigma, Rotor, Reflector } from "../enigma.ts";
+import { Enigma, Reflector, Rotor } from "../enigma.ts";
 
 // Execute this with Deno:
 //

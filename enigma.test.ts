@@ -1,12 +1,12 @@
 import {
   Base,
+  Direction,
   Enigma,
   PlugBoard,
   Reflector,
   Rotor,
   RotorGroup,
   RotorState,
-  Direction,
 } from "./enigma.ts";
 import {
   assertEquals,
