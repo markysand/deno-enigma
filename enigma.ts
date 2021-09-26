@@ -28,28 +28,28 @@ export abstract class Base implements Encode {
 
   abstract encode(n: number, direction?: Direction): number;
 
-  static validate(m: Mapping, vl: ValidationLevel) {
-    this.assertLength(m);
-    this.assertValue(m);
-    this.assertUnique(m);
+  static validate(mapping: Mapping, validationLevel: ValidationLevel) {
+    this.assertLength(mapping);
+    this.assertValue(mapping);
+    this.assertUnique(mapping);
 
-    if (vl >= ValidationLevel.Symmetric) {
-      this.assertSymmetric(m);
+    if (validationLevel >= ValidationLevel.Symmetric) {
+      this.assertSymmetric(mapping);
     }
 
-    if (vl == ValidationLevel.Reflective) {
-      this.assertReflective(m);
-    }
-  }
-
-  private static assertLength(m: Mapping) {
-    if (m.length != 26) {
-      throw new Error(`mapping length ${m.length} - must be 26}`);
+    if (validationLevel == ValidationLevel.Reflective) {
+      this.assertReflective(mapping);
     }
   }
 
-  private static assertValue(m: Mapping) {
-    m.forEach((n) => {
+  private static assertLength(mapping: Mapping) {
+    if (mapping.length != 26) {
+      throw new Error(`mapping length ${mapping.length} - must be 26}`);
+    }
+  }
+
+  private static assertValue(mapping: Mapping) {
+    mapping.forEach((n) => {
       if (!Number.isFinite(n)) {
         throw new Error("n must be finite number");
       }
@@ -60,10 +60,10 @@ export abstract class Base implements Encode {
     });
   }
 
-  private static assertUnique(m: Mapping) {
+  private static assertUnique(mapping: Mapping) {
     const mapped: Record<string, boolean> = {};
 
-    m.forEach((value) => {
+    mapping.forEach((value) => {
       mapped[value] = true;
     });
 
@@ -72,17 +72,17 @@ export abstract class Base implements Encode {
     }
   }
 
-  private static assertReflective(m: Mapping) {
-    m.forEach((val, index) => {
+  private static assertReflective(mapping: Mapping) {
+    mapping.forEach((val, index) => {
       if (val === index) {
-        throw new Error(`reflective error at ${index} of ${m}`);
+        throw new Error(`reflective error at ${index} of ${mapping}`);
       }
     });
   }
 
-  private static assertSymmetric(m: Mapping) {
-    m.forEach((val, index) => {
-      if (m[val] !== index) {
+  private static assertSymmetric(mapping: Mapping) {
+    mapping.forEach((val, index) => {
+      if (mapping[val] !== index) {
         throw new Error(
           `mapping must be symmetric, failed at pair ${val}:${index}`,
         );
@@ -312,16 +312,16 @@ export class RotorGroup implements Advance, Encode {
     });
   }
 
-  encode(n: number, d: Direction): number {
-    if (d === Direction.Reverse) {
+  encode(n: number, direction: Direction): number {
+    if (direction === Direction.Reverse) {
       return this.rotorStates.reduce(
-        (acc, val) => val.encode(acc, Direction.Reverse),
+        (value, rotorState) => rotorState.encode(value, Direction.Reverse),
         n,
       );
     }
 
     return this.rotorStates.reduceRight(
-      (acc, val) => val.encode(acc, Direction.Forward),
+      (value, rotorState) => rotorState.encode(value, Direction.Forward),
       n,
     );
   }
