@@ -257,10 +257,9 @@ export class Rotor extends Base {
   }
 
   encode(n: number, direction: Direction): number {
-    if (direction === Direction.Reverse) {
-      return this.reverseMapping[n];
-    }
-    return this.mapping[n];
+    return direction === Direction.Reverse
+      ? this.reverseMapping[n]
+      : this.mapping[n];
   }
 }
 
